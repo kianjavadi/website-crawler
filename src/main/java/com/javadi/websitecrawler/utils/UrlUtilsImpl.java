@@ -53,7 +53,7 @@ public class UrlUtilsImpl implements UrlUtils {
 
     @Override
     public String getDomainNameForLinksWithinWebsite(String url) {
-        if (!url.startsWith("http"))
+        if (!url.startsWith("http") && !url.startsWith("ftp"))
             return this.domain;
         URI uri;
         try {

@@ -1,4 +1,4 @@
-package com.javadi.websitecrawler.crawler;
+package com.javadi.websitecrawler.content;
 
 import java.io.IOException;
 import java.net.URLConnection;

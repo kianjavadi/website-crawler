@@ -1,7 +1,5 @@
 package com.javadi.websitecrawler.content;
 
-import com.javadi.websitecrawler.crawler.ContentReader;
-import com.javadi.websitecrawler.crawler.ContentWriter;
 import com.javadi.websitecrawler.crawler.UrlUtils;
 
 import java.io.IOException;

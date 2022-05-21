@@ -1,6 +1,6 @@
 package com.javadi.websitecrawler.io;
 
-import com.javadi.websitecrawler.crawler.WebContentReader;
+import com.javadi.websitecrawler.content.WebContentReader;
 import com.javadi.websitecrawler.utils.MimeTypes;
 
 import java.io.BufferedReader;

@@ -1,10 +1,7 @@
 package com.javadi.websitecrawler.content;
 
 import com.javadi.websitecrawler.crawler.ContentHandler;
-import com.javadi.websitecrawler.crawler.ContentReader;
-import com.javadi.websitecrawler.crawler.ContentWriter;
 import com.javadi.websitecrawler.crawler.UrlUtils;
-import com.javadi.websitecrawler.crawler.WebContentReader;
 
 import java.net.HttpURLConnection;
 

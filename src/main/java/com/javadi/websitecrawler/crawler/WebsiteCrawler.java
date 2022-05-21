@@ -24,22 +24,36 @@ public class WebsiteCrawler extends RecursiveAction {
     @Override
     protected void compute() {
         while (!queue.isEmpty()) {
-            String url;
             try {
-                url = queue.remove();
+                crawl();
             } catch (NoSuchElementException e) {
                 System.out.println("There's no element left in the queue at the moment");
-                return;
+                break;
+            } catch (Exception e) {
+                System.out.println("Exception while processing in a crawler: " + e.getMessage());
+                break;
             }
-            String rawHtml = contentHandler.handle(url);
-            urlDiscoverer.discover(rawHtml).stream()
-                    .filter(discoveredWebsites::add)
-                    .forEach(queue::add);
-            WebsiteCrawler websiteCrawler = new WebsiteCrawler(queue, discoveredWebsites, activeWebsiteCrawlers, contentHandler, urlDiscoverer);
-            activeWebsiteCrawlers.add(websiteCrawler);
-            websiteCrawler.fork();
         }
         activeWebsiteCrawlers.remove(this);
+    }
+
+    private void crawl() {
+        String url = queue.remove();
+        String rawHtml = contentHandler.handle(url);
+        discoverUrlsAndAddToQueue(rawHtml);
+        spawnNewCrawler();
+    }
+
+    private void discoverUrlsAndAddToQueue(String rawHtml) {
+        urlDiscoverer.discover(rawHtml).stream()
+                .filter(discoveredWebsites::add)
+                .forEach(queue::add);
+    }
+
+    private void spawnNewCrawler() {
+        WebsiteCrawler websiteCrawler = new WebsiteCrawler(queue, discoveredWebsites, activeWebsiteCrawlers, contentHandler, urlDiscoverer);
+        activeWebsiteCrawlers.add(websiteCrawler);
+        websiteCrawler.fork();
     }
 
 }

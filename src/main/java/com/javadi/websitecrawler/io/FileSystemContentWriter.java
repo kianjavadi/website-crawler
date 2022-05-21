@@ -1,6 +1,6 @@
 package com.javadi.websitecrawler.io;
 
-import com.javadi.websitecrawler.crawler.ContentWriter;
+import com.javadi.websitecrawler.content.ContentWriter;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

@@ -1,6 +1,6 @@
 package com.javadi.websitecrawler.io;
 
-import com.javadi.websitecrawler.crawler.ContentReader;
+import com.javadi.websitecrawler.content.ContentReader;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
