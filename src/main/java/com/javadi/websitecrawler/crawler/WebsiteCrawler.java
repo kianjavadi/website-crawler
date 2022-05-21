@@ -1,11 +1,17 @@
 package com.javadi.websitecrawler.crawler;
 
-import java.io.BufferedReader;
+import com.javadi.websitecrawler.io.ContentReader;
+import com.javadi.websitecrawler.io.ContentWriter;
+
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -18,20 +24,30 @@ public class WebsiteCrawler {
     private static final String DEFAULT_PROTOCOL = "https";
     private static final String HREF_ATTRIBUTE = "href=\"";
     private static final int HREF_ATTRIBUTE_LENGTH = HREF_ATTRIBUTE.length();
+    private static final String HTML_EXTENSION_WITH_DOT = ".html";
     private static final Pattern URL_PATTERN = Pattern.compile("(http|ftp|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])");
     private static final Pattern HREF_PATTERN = Pattern.compile("(href=\")([^\"]+)");
     private static final Pattern HTTP_PATTERN = Pattern.compile("((ftp|https?)(://))?(www.)?(.*)");
 
     private final String domain;
     private final String protocol;
+    private final String workingDirectory;
     private final Queue<String> queue;
     private final Set<String> discoveredWebsites;
+    private final Pattern uriPattern;
 
-    public WebsiteCrawler(String website) {
+    private final ContentReader contentReader;
+    private final ContentWriter contentWriter;
+
+    public WebsiteCrawler(String website, ContentReader contentReader, ContentWriter contentWriter) {
+        this.contentReader = contentReader;
+        this.contentWriter = contentWriter;
         this.queue = new LinkedList<>();
         this.discoveredWebsites = new HashSet<>();
         this.domain = getDomainForApplicationInput(website);
         this.protocol = getProtocol(website);
+        this.workingDirectory = System.getProperty("user.home") + File.separator + this.domain;
+        this.uriPattern = Pattern.compile("((ftp|https?)://)(.*" + this.domain + "/)(.*)");
     }
 
     public void crawl() {
@@ -41,7 +57,7 @@ public class WebsiteCrawler {
             String url = this.queue.remove();
             try {
                 System.out.println("Analyzing: " + url);
-                String rawHtml = readURL(url);
+                String rawHtml = readAndStoreURL(url);
 
                 Matcher urlMatcher = URL_PATTERN.matcher(rawHtml);
                 discoverUrls(urlMatcher);
@@ -65,17 +81,17 @@ public class WebsiteCrawler {
         }
     }
 
-    private String readURL(String stringUrl) throws IOException {
-        URL url = new URL(stringUrl);
-        StringBuilder rawHtml = new StringBuilder();
-        try (InputStreamReader inputStreamReader = new InputStreamReader(url.openConnection().getInputStream());
-             BufferedReader reader = new BufferedReader(inputStreamReader)) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                rawHtml.append(line);
-            }
+    private String readAndStoreURL(String stringUrl) {
+        try {
+            HttpURLConnection connection = contentReader.makeConnection(stringUrl);
+            String fileExtension = contentReader.getFileExtension(connection);
+            if (fileExtension == null)
+                return "";
+            String filePath = getFilePath(stringUrl, fileExtension);
+            return readAndWriteContent(connection, fileExtension, filePath);
+        } catch (Exception e) {
+            return "";
         }
-        return rawHtml.toString();
     }
 
     private String getDomainNameForLinksWithinWebsite(String url) {
@@ -89,7 +105,7 @@ public class WebsiteCrawler {
             return "UNRECOGNIZED_DOMAIN";
         }
         String domain = uri.getHost();
-        return domain == null ? "" : (domain.startsWith("www.") ? domain.substring(4) : domain);
+        return domain == null ? "UNRECOGNIZED_DOMAIN" : (domain.startsWith("www.") ? domain.substring(4) : domain);
     }
 
     private boolean doesUrlBelongToSameDomain(String url) {
@@ -164,6 +180,71 @@ public class WebsiteCrawler {
         } else {
             return removedWww;
         }
+    }
+
+    private String getFilePath(String stringUrl, String fileExtension) throws IOException {
+        String parentDirectory = getParentPath(stringUrl);
+        Files.createDirectories(Path.of(workingDirectory, parentDirectory));
+        String fileName = getFileNameWithExtension(stringUrl, fileExtension);
+        return workingDirectory + File.separator + parentDirectory + File.separator + fileName;
+    }
+
+    private String readAndWriteContent(HttpURLConnection connection, String fileExtension, String filePath) throws IOException {
+        if (fileExtension.equals(HTML_EXTENSION_WITH_DOT)) {
+            return readAndWriteHtmlContent(connection, filePath);
+        } else {
+            // we're not interested in non-html files
+            contentWriter.write(connection, filePath);
+            return "";
+        }
+    }
+
+    private String readAndWriteHtmlContent(HttpURLConnection connection, String filePath) throws IOException {
+        String content = contentReader.readAsString(connection);
+        contentWriter.write(content, filePath);
+        return content;
+    }
+
+    public String getParentPath(String url) {
+        String uri = "";
+        try {
+            Matcher matcher = uriPattern.matcher(url);
+            if (matcher.find()) {
+                uri = matcher.group(4);
+                uri = removeLastPath(uri);
+            }
+        } catch (Exception e) {
+
+        }
+        return uri;
+    }
+
+    private String removeLastPath(String uri) {
+        int i = uri.lastIndexOf('/');
+        if (i != -1) {
+            uri = uri.substring(0, i);
+        } else {
+            uri = "";
+        }
+        return uri;
+    }
+
+    private String getFileNameWithExtension(String stringUrl, String fileExtension) {
+        String fileName = getFileName(stringUrl);
+        if (fileExtension == null || fileName.isBlank()) {
+            fileName = "home";
+        } else if (!fileName.endsWith(fileExtension)) {
+            fileName += fileExtension;
+        }
+        return URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+    }
+
+    private String getFileName(String url) {
+        if (url == null)
+            return null;
+
+        final int index = url.lastIndexOf('/');
+        return url.substring(index + 1);
     }
 
 }
