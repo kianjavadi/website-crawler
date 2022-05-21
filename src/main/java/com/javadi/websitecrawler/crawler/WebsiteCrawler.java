@@ -1,5 +1,7 @@
 package com.javadi.websitecrawler.crawler;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Set;
@@ -26,6 +28,7 @@ public class WebsiteCrawler extends RecursiveAction {
         while (!queue.isEmpty()) {
             try {
                 crawl();
+                spawnNewCrawler();
             } catch (NoSuchElementException e) {
                 System.out.println("There's no element left in the queue at the moment");
                 break;
@@ -37,11 +40,10 @@ public class WebsiteCrawler extends RecursiveAction {
         activeWebsiteCrawlers.remove(this);
     }
 
-    private void crawl() {
+    void crawl() {
         String url = queue.remove();
         String rawHtml = contentHandler.handle(url);
         discoverUrlsAndAddToQueue(rawHtml);
-        spawnNewCrawler();
     }
 
     private void discoverUrlsAndAddToQueue(String rawHtml) {
@@ -50,10 +52,22 @@ public class WebsiteCrawler extends RecursiveAction {
                 .forEach(queue::add);
     }
 
-    private void spawnNewCrawler() {
+    void spawnNewCrawler() {
         WebsiteCrawler websiteCrawler = new WebsiteCrawler(queue, discoveredWebsites, activeWebsiteCrawlers, contentHandler, urlDiscoverer);
         activeWebsiteCrawlers.add(websiteCrawler);
         websiteCrawler.fork();
+    }
+
+    Collection<String> getQueue() {
+        return Collections.unmodifiableCollection(queue);
+    }
+
+    Collection<String> getDiscoveredWebsites() {
+        return Collections.unmodifiableCollection(discoveredWebsites);
+    }
+
+    Collection<WebsiteCrawler> getActiveWebsiteCrawlers() {
+        return Collections.unmodifiableCollection(activeWebsiteCrawlers);
     }
 
 }
