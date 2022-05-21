@@ -18,6 +18,10 @@ import java.nio.file.StandardCopyOption;
 
 import static com.javadi.websitecrawler.config.ApplicationConstants.DOWNLOADING_BUFFER_SIZE;
 
+/**
+ * FileSystem implementation of the ContentWriter,
+ * content of the resources will be written in a filesystem
+ */
 public class FileSystemContentWriter implements ContentWriter {
 
     private final String workingDirectory;

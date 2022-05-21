@@ -10,6 +10,10 @@ import java.util.regex.Matcher;
 import static com.javadi.websitecrawler.config.ApplicationConstants.HREF_PATTERN;
 import static com.javadi.websitecrawler.config.ApplicationConstants.URL_PATTERN;
 
+/**
+ * The Regex implementation of the UrlDiscoverer,
+ * so a regex will be used in order to discover the URLs
+ */
 public class RegexMatcherUrlDiscoverer implements UrlDiscoverer {
 
     private final UrlUtils urlUtils;

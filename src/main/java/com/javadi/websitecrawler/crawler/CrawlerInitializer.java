@@ -6,6 +6,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ForkJoinPool;
 
+/**
+ * This class uses ForkJoinPool for parallelism, so it's responsible for instantiating ForkJoinPool and the first task (WebsiteCrawler)
+ * this class wil be busy waiting until there's no active tasks (WebsiteCrawler)
+ */
 public class CrawlerInitializer {
 
     private final String protocol;

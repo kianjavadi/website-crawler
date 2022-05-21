@@ -7,6 +7,9 @@ import java.net.HttpURLConnection;
 
 import static com.javadi.websitecrawler.config.ApplicationConstants.HTML_EXTENSION_WITH_DOT;
 
+/**
+ * This class identifies the extension of the given resource and delegates the handling of it based on the extension
+ */
 public class ContentHandlerImpl implements ContentHandler {
 
     private final WebContentReader webContentReader;

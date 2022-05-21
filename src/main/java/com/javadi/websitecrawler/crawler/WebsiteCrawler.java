@@ -7,6 +7,13 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.RecursiveAction;
 
+/**
+ * This class uses Breadth First Search in order to crawl a given URL
+ * so the urls will be put in a queue and crawler starts processing/parsing of a url from the queue,
+ * every url that is processed will be put in a Set so it won't get processed twice
+ * the URL will be read and parsed and every identified URL will be added to the queue for further processing
+ * at the end of each iteration, a new WebsiteCrawler (task) will be instantiated and forked
+ */
 public class WebsiteCrawler extends RecursiveAction {
 
     private final Queue<String> queue;
@@ -60,10 +67,6 @@ public class WebsiteCrawler extends RecursiveAction {
 
     Collection<String> getQueue() {
         return Collections.unmodifiableCollection(queue);
-    }
-
-    Collection<String> getDiscoveredWebsites() {
-        return Collections.unmodifiableCollection(discoveredWebsites);
     }
 
     Collection<WebsiteCrawler> getActiveWebsiteCrawlers() {

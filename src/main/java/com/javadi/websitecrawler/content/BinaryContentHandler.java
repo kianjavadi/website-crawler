@@ -5,6 +5,9 @@ import com.javadi.websitecrawler.utils.UrlUtils;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 
+/**
+ * handles every valid resource that is not an html
+ */
 public class BinaryContentHandler implements SpecificContentHandler {
 
     private final UrlUtils urlUtils;
