@@ -2,9 +2,9 @@ package com.javadi.websitecrawler;
 
 import com.javadi.websitecrawler.content.ContentHandlerImpl;
 import com.javadi.websitecrawler.crawler.ContentHandler;
+import com.javadi.websitecrawler.crawler.CrawlerInitializer;
 import com.javadi.websitecrawler.crawler.UrlDiscoverer;
 import com.javadi.websitecrawler.crawler.UrlUtils;
-import com.javadi.websitecrawler.crawler.WebsiteCrawler;
 import com.javadi.websitecrawler.discovery.RegexMatcherUrlDiscoverer;
 import com.javadi.websitecrawler.io.FileSystemContentReader;
 import com.javadi.websitecrawler.io.FileSystemContentWriter;
@@ -28,8 +28,8 @@ public class App {
 		String protocol = urlUtils.getProtocol(domain);
 		ContentHandler contentHandler = new ContentHandlerImpl(urlUtils, new WebContentReaderImpl(), new FileSystemContentReader(), new FileSystemContentWriter(domain));
 		UrlDiscoverer urlDiscoverer = new RegexMatcherUrlDiscoverer(urlUtils, protocol);
-		WebsiteCrawler websiteCrawler = new WebsiteCrawler(protocol, website, contentHandler, urlDiscoverer);
-		websiteCrawler.crawl();
+		CrawlerInitializer crawlerInitializer = new CrawlerInitializer(protocol, website, contentHandler, urlDiscoverer);
+		crawlerInitializer.crawl();
 		System.out.println("TOTAL TIME TAKEN: " + (System.currentTimeMillis() - start) + " (ms)");
 	}
 

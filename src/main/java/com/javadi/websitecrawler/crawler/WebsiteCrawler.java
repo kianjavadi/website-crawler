@@ -1,47 +1,46 @@
 package com.javadi.websitecrawler.crawler;
 
+import java.util.NoSuchElementException;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.RecursiveAction;
 
-public class WebsiteCrawler {
+public class WebsiteCrawler extends RecursiveAction {
 
-    private final String protocol;
-    private final String domain;
-    private final ContentHandler contentHandler;
-    private final UrlDiscoverer urlDiscoverer;
     private final Queue<String> queue;
     private final Set<String> discoveredWebsites;
+    private final Set<WebsiteCrawler> activeWebsiteCrawlers;
+    private final ContentHandler contentHandler;
+    private final UrlDiscoverer urlDiscoverer;
 
-    public WebsiteCrawler(String protocol, String domain, ContentHandler contentHandler, UrlDiscoverer urlDiscoverer) {
-        this.protocol = protocol;
-        this.domain = domain;
+    public WebsiteCrawler(Queue<String> queue, Set<String> discoveredWebsites, Set<WebsiteCrawler> activeWebsiteCrawlers, ContentHandler contentHandler, UrlDiscoverer urlDiscoverer) {
+        this.queue = queue;
+        this.discoveredWebsites = discoveredWebsites;
+        this.activeWebsiteCrawlers = activeWebsiteCrawlers;
         this.contentHandler = contentHandler;
         this.urlDiscoverer = urlDiscoverer;
-        this.queue = new ConcurrentLinkedQueue<>();
-        this.discoveredWebsites = ConcurrentHashMap.newKeySet();
     }
 
-    public void crawl() {
-        addRootUrlToQueue();
+    @Override
+    protected void compute() {
         while (!queue.isEmpty()) {
-            exploreQueueAndDiscover();
+            String url;
+            try {
+                url = queue.remove();
+            } catch (NoSuchElementException e) {
+                System.out.println("There's no element left in the queue at the moment");
+                return;
+            }
+            String rawHtml = contentHandler.handle(url);
+            urlDiscoverer.discover(rawHtml).stream()
+                    .filter(discoveredWebsites::add)
+                    .forEach(queue::add);
+            WebsiteCrawler websiteCrawler = new WebsiteCrawler(queue, discoveredWebsites, activeWebsiteCrawlers, contentHandler, urlDiscoverer);
+            activeWebsiteCrawlers.add(websiteCrawler);
+            websiteCrawler.fork();
         }
-    }
-
-    private void addRootUrlToQueue() {
-        String website = protocol + "://" + domain;
-        this.queue.add(website);
-        this.discoveredWebsites.add(website);
-    }
-
-    private void exploreQueueAndDiscover() {
-        String url = this.queue.remove();
-        String rawHtml = contentHandler.handle(url);
-        urlDiscoverer.discover(rawHtml).stream()
-                .filter(discoveredWebsites::add)
-                .forEach(queue::add);
+        activeWebsiteCrawlers.remove(this);
     }
 
 }
+
