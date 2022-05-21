@@ -31,6 +31,7 @@ class FileSystemContentWriterTest {
         File tempFile = new File(filePath);
         assertTrue(tempFile.exists() && tempFile.length() > 0);
         tempFile.delete();
+        tempFile.getParentFile().delete();
         System.out.println("writeFromStringContentToFile passed");
     }
 
@@ -53,6 +54,7 @@ class FileSystemContentWriterTest {
         File tempFile = new File(filePath);
         assertTrue(tempFile.exists() && tempFile.length() > 0);
         tempFile.delete();
+        tempFile.getParentFile().delete();
         System.out.println("writeFromRemoteUrlToFile passed");
     }
 
