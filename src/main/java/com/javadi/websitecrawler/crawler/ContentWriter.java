@@ -5,8 +5,8 @@ import java.net.URLConnection;
 
 public interface ContentWriter {
 
-    void write(String content, String filePath) throws IOException;
+    String write(String content, String parentPath, String fileName) throws IOException;
 
-    void write(URLConnection connection, String filePath) throws IOException;
+    String write(URLConnection connection, String parentPath, String fileName) throws IOException;
 
 }

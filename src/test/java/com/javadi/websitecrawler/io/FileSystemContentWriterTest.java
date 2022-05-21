@@ -12,31 +12,34 @@ import java.net.URLConnection;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ContentWriterImplTest {
+class FileSystemContentWriterTest {
 
-    ContentWriterImpl contentWriter;
+    FileSystemContentWriter contentWriter;
 
     @BeforeAll
     void initialize() {
-        contentWriter = new ContentWriterImpl();
+        String domain = "tretton37.com";
+        contentWriter = new FileSystemContentWriter(domain);
     }
 
     @Test
     void writeFromStringContentToFile() throws IOException {
         String content = "Hello!";
-        File tempFile = getTempFile();
-        contentWriter.write(content, tempFile.getAbsolutePath());
+        String tempParentPath = getTempDirectory();
+        String tempFileName = getTempFile();
+        String filePath = contentWriter.write(content, tempParentPath, tempFileName);
+        File tempFile = new File(filePath);
         assertTrue(tempFile.exists() && tempFile.length() > 0);
         tempFile.delete();
         System.out.println("writeFromStringContentToFile passed");
     }
 
-    private File getTempFile() {
-        File file;
-        do {
-            file = new File(System.getProperty("user.home") + File.separator + System.currentTimeMillis() + System.nanoTime() + ".txt");
-        } while (file.exists());
-        return file;
+    private String getTempDirectory() {
+        return System.currentTimeMillis() + System.nanoTime() + "";
+    }
+
+    private String getTempFile() {
+        return System.currentTimeMillis() + System.nanoTime() + ".txt";
     }
 
     @Test
@@ -44,8 +47,10 @@ class ContentWriterImplTest {
         URL url = this.getClass().getClassLoader().getResource("test.html");
         URLConnection connection = url.openConnection();
         connection.connect();
-        File tempFile = getTempFile();
-        contentWriter.write(connection, tempFile.getAbsolutePath());
+        String tempParentPath = getTempDirectory();
+        String tempFileName = getTempFile();
+        String filePath = contentWriter.write(connection, tempParentPath, tempFileName);
+        File tempFile = new File(filePath);
         assertTrue(tempFile.exists() && tempFile.length() > 0);
         tempFile.delete();
         System.out.println("writeFromRemoteUrlToFile passed");
