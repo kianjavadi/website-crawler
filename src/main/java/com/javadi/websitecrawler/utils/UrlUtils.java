@@ -1,4 +1,4 @@
-package com.javadi.websitecrawler.crawler;
+package com.javadi.websitecrawler.utils;
 
 import java.util.regex.Matcher;
 

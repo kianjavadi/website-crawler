@@ -4,11 +4,11 @@ import com.javadi.websitecrawler.content.ContentHandlerImpl;
 import com.javadi.websitecrawler.crawler.ContentHandler;
 import com.javadi.websitecrawler.crawler.CrawlerInitializer;
 import com.javadi.websitecrawler.crawler.UrlDiscoverer;
-import com.javadi.websitecrawler.crawler.UrlUtils;
 import com.javadi.websitecrawler.discovery.RegexMatcherUrlDiscoverer;
 import com.javadi.websitecrawler.io.FileSystemContentReader;
 import com.javadi.websitecrawler.io.FileSystemContentWriter;
 import com.javadi.websitecrawler.io.WebContentReaderImpl;
+import com.javadi.websitecrawler.utils.UrlUtils;
 import com.javadi.websitecrawler.utils.UrlUtilsImpl;
 
 public class App {

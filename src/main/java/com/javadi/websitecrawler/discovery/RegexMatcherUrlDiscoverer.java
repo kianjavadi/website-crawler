@@ -1,7 +1,7 @@
 package com.javadi.websitecrawler.discovery;
 
 import com.javadi.websitecrawler.crawler.UrlDiscoverer;
-import com.javadi.websitecrawler.crawler.UrlUtils;
+import com.javadi.websitecrawler.utils.UrlUtils;
 
 import java.util.HashSet;
 import java.util.Set;

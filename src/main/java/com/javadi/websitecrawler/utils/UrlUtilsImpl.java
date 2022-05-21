@@ -1,7 +1,5 @@
 package com.javadi.websitecrawler.utils;
 
-import com.javadi.websitecrawler.crawler.UrlUtils;
-
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URI;
