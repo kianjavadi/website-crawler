@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +19,8 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.javadi.websitecrawler.config.ApplicationConstants.ALLOWED_CHARACTERS_IN_URL;
 
 public class WebsiteCrawler {
 
@@ -77,7 +80,7 @@ public class WebsiteCrawler {
             String finalCompleteUrl = getFinalCompleteUrl(url, protocol);
             if (isUrlValid(domain, url) && !discoveredWebsites.contains(url)) {
                 discoveredWebsites.add(url);
-                queue.add(finalCompleteUrl);
+                queue.add(encodeUrl(finalCompleteUrl));
             }
         }
     }
@@ -246,6 +249,25 @@ public class WebsiteCrawler {
 
         final int index = url.lastIndexOf('/');
         return url.substring(index + 1);
+    }
+
+    public String encodeUrl(String url) {
+        Set<Character> needToChangeChars = getNeedToChangeChars(url);
+        for (Character needToChangeChar : needToChangeChars) {
+            url = url.replace(needToChangeChar.toString(), URLEncoder.encode(needToChangeChar.toString(), StandardCharsets.UTF_8));
+        }
+        return url;
+    }
+
+    private Set<Character> getNeedToChangeChars(String url) {
+        Set<Character> needToChangeChars = new HashSet<>();
+        for (int i = 0; i < url.length(); i++) {
+            char ch = url.charAt(i);
+            if (!ALLOWED_CHARACTERS_IN_URL.contains(ch)) {
+                needToChangeChars.add(ch);
+            }
+        }
+        return needToChangeChars;
     }
 
 }
