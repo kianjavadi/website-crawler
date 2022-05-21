@@ -73,8 +73,9 @@ public class WebsiteCrawler {
     private void discoverUrls(Matcher matcher) {
         while (matcher.find()) {
             String url = getUrlConsideringHref(matcher);
+            String domain = getDomainNameForLinksWithinWebsite(url);
             String finalCompleteUrl = getFinalCompleteUrl(url, protocol);
-            if (doesUrlBelongToSameDomain(url) && !discoveredWebsites.contains(url)) {
+            if (isUrlValid(domain, url) && !discoveredWebsites.contains(url)) {
                 discoveredWebsites.add(url);
                 queue.add(finalCompleteUrl);
             }
@@ -108,9 +109,9 @@ public class WebsiteCrawler {
         return domain == null ? "UNRECOGNIZED_DOMAIN" : (domain.startsWith("www.") ? domain.substring(4) : domain);
     }
 
-    private boolean doesUrlBelongToSameDomain(String url) {
-        String domain = getDomainNameForLinksWithinWebsite(url);
-        return this.domain.contains(domain);
+    public boolean isUrlValid(String domain, String url) {
+        return this.domain.contains(domain) && !url.contains("/../") && !url.contains("tel:")
+                && !url.contains("mailto:") && !url.contains("javascript:");
     }
 
     private String getDomainForApplicationInput(String website) {
