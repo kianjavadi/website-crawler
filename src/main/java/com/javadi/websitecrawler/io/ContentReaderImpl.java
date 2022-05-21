@@ -1,5 +1,6 @@
 package com.javadi.websitecrawler.io;
 
+import com.javadi.websitecrawler.crawler.ContentReader;
 import com.javadi.websitecrawler.utils.MimeTypes;
 
 import java.io.BufferedReader;
@@ -8,8 +9,9 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class ContentReader {
+public class ContentReaderImpl implements ContentReader {
 
+    @Override
     public String readAsString(HttpURLConnection connection) throws IOException {
         StringBuilder rawHtml = new StringBuilder();
         try (InputStreamReader inputStreamReader = new InputStreamReader(connection.getInputStream());
@@ -22,6 +24,7 @@ public class ContentReader {
         return rawHtml.toString();
     }
 
+    @Override
     public HttpURLConnection makeConnection(String stringUrl) throws IOException {
         URL url = new URL(stringUrl);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -34,6 +37,7 @@ public class ContentReader {
         return connection;
     }
 
+    @Override
     public String getFileExtension(HttpURLConnection connection) {
         String mime = connection.getContentType();
         if (mime == null)
