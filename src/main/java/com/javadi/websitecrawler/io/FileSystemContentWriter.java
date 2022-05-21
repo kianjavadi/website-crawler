@@ -75,14 +75,14 @@ public class FileSystemContentWriter implements ContentWriter {
                 downloadedFileSize += x;
                 // calculate progress
                 final int currentProgress = (int) ((((double) downloadedFileSize) / completeFileSize) * 100d);
-                System.out.printf("Saving: %s (%d%%)  %n", url, currentProgress);
+                System.out.printf("Saving: %s in: %s (%d%%)  %n", url, filePath, currentProgress);
                 bout.write(data, 0, x);
             }
         }
     }
 
     private void writeContentWithoutPrintingProgress(URLConnection connection, String filePath, String url) throws IOException {
-        System.out.printf("Saving: %s%n", url);
+        System.out.printf("Saving: %s in: %s%n", url, filePath);
         Files.copy(connection.getInputStream(), Path.of(filePath), StandardCopyOption.REPLACE_EXISTING);
     }
 
