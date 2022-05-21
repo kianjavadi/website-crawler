@@ -1,60 +1,50 @@
 package com.javadi.websitecrawler.crawler;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.regex.Matcher;
-
-import static com.javadi.websitecrawler.config.ApplicationConstants.HREF_PATTERN;
-import static com.javadi.websitecrawler.config.ApplicationConstants.URL_PATTERN;
 
 public class WebsiteCrawler {
 
+    private final String protocol;
+    private final String domain;
+    private final ContentHandler contentHandler;
+    private final UrlDiscoverer urlDiscoverer;
     private final Queue<String> queue;
     private final Set<String> discoveredWebsites;
 
-    private final UrlUtils urlUtils;
-    private final ContentHandler contentHandler;
-    private final String domain;
-    private final String protocol;
-
-    public WebsiteCrawler(String domain, UrlUtils urlUtils, ContentHandler contentHandler) {
-        this.domain = urlUtils.getDomainForApplicationInput(domain);
-        this.protocol = urlUtils.getProtocol(domain);
-        this.urlUtils = urlUtils;
+    public WebsiteCrawler(String protocol, String domain, ContentHandler contentHandler, UrlDiscoverer urlDiscoverer) {
+        this.protocol = protocol;
+        this.domain = domain;
         this.contentHandler = contentHandler;
+        this.urlDiscoverer = urlDiscoverer;
         this.queue = new ConcurrentLinkedQueue<>();
         this.discoveredWebsites = ConcurrentHashMap.newKeySet();
     }
 
     public void crawl() {
-        String website = protocol + "://" + domain;
-        this.queue.add(website);
-        this.discoveredWebsites.add(website);
-
+        addRootUrlToQueue();
         while (!queue.isEmpty()) {
-            String url = this.queue.remove();
-            System.out.println("Saving: " + url);
-            String rawHtml = contentHandler.handle(url);
-
-            Matcher hrefMatcher = HREF_PATTERN.matcher(rawHtml);
-            discoverUrls(hrefMatcher);
-
-            Matcher urlMatcher = URL_PATTERN.matcher(rawHtml);
-            discoverUrls(urlMatcher);
+            exploreQueueAndDiscover();
         }
     }
 
-    private void discoverUrls(Matcher hrefMatcher) {
-        while (hrefMatcher.find()) {
-            String url = urlUtils.getUrlConsideringHref(hrefMatcher);
-            String domain = urlUtils.getDomainNameForLinksWithinWebsite(url);
-            String finalCompleteUrl = urlUtils.getFinalCompleteUrl(url, protocol);
-            if (urlUtils.isUrlValid(domain, finalCompleteUrl) && discoveredWebsites.add(finalCompleteUrl)) {
-                queue.add(urlUtils.encodeUrl(finalCompleteUrl));
-            }
-        }
+    private void addRootUrlToQueue() {
+        String website = protocol + "://" + domain;
+        this.queue.add(website);
+        this.discoveredWebsites.add(website);
+    }
+
+    private void exploreQueueAndDiscover() {
+        String url = this.queue.remove();
+        System.out.println("Saving: " + URLDecoder.decode(url, StandardCharsets.UTF_8));
+        String rawHtml = contentHandler.handle(url);
+        urlDiscoverer.discover(rawHtml).stream()
+                .filter(discoveredWebsites::add)
+                .forEach(queue::add);
     }
 
 }
