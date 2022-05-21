@@ -15,15 +15,15 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ContentReaderImplTest {
+class WebContentReaderImplTest {
 
-    ContentReaderImpl contentReader;
+    WebContentReaderImpl contentReader;
     URL url;
 
     @BeforeAll
     void initialize() throws MalformedURLException {
-        contentReader = new ContentReaderImpl();
-        url = new URL("https://tretton37.com");
+        contentReader = new WebContentReaderImpl();
+        url = new URL("https://tretton37.com/");
     }
 
     @Test

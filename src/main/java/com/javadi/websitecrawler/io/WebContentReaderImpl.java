@@ -1,6 +1,6 @@
 package com.javadi.websitecrawler.io;
 
-import com.javadi.websitecrawler.crawler.ContentReader;
+import com.javadi.websitecrawler.crawler.WebContentReader;
 import com.javadi.websitecrawler.utils.MimeTypes;
 
 import java.io.BufferedReader;
@@ -9,7 +9,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class ContentReaderImpl implements ContentReader {
+public class WebContentReaderImpl implements WebContentReader {
 
     @Override
     public String readAsString(HttpURLConnection connection) throws IOException {

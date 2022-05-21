@@ -4,6 +4,7 @@ import com.javadi.websitecrawler.crawler.ContentHandler;
 import com.javadi.websitecrawler.crawler.ContentReader;
 import com.javadi.websitecrawler.crawler.ContentWriter;
 import com.javadi.websitecrawler.crawler.UrlUtils;
+import com.javadi.websitecrawler.crawler.WebContentReader;
 
 import java.net.HttpURLConnection;
 
@@ -11,13 +12,13 @@ import static com.javadi.websitecrawler.config.ApplicationConstants.HTML_EXTENSI
 
 public class ContentHandlerImpl implements ContentHandler {
 
-    private final ContentReader contentReader;
+    private final WebContentReader webContentReader;
     private final BinaryContentHandler binaryContentHandler;
     private final HtmlContentHandler htmlContentHandler;
     private final NoopContentHandler noopContentHandler;
 
-    public ContentHandlerImpl(UrlUtils urlUtils, ContentReader contentReader, ContentWriter contentWriter) {
-        this.contentReader = contentReader;
+    public ContentHandlerImpl(UrlUtils urlUtils, WebContentReader webContentReader, ContentReader contentReader, ContentWriter contentWriter) {
+        this.webContentReader = webContentReader;
         binaryContentHandler = new BinaryContentHandler(urlUtils, contentWriter);
         htmlContentHandler = new HtmlContentHandler(urlUtils, contentReader, contentWriter);
         noopContentHandler = new NoopContentHandler();
@@ -27,8 +28,8 @@ public class ContentHandlerImpl implements ContentHandler {
     @Override
     public String handle(String url) {
         try {
-            HttpURLConnection connection = contentReader.makeConnection(url);
-            String fileExtension = contentReader.getFileExtension(connection);
+            HttpURLConnection connection = webContentReader.makeConnection(url);
+            String fileExtension = webContentReader.getFileExtension(connection);
             SpecificContentHandler contentHandler = getProperContentHandler(fileExtension);
             return contentHandler.handle(url, connection, fileExtension);
         } catch (Exception e) {

@@ -1,7 +1,5 @@
 package com.javadi.websitecrawler.crawler;
 
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +38,6 @@ public class WebsiteCrawler {
 
     private void exploreQueueAndDiscover() {
         String url = this.queue.remove();
-        System.out.println("Saving: " + URLDecoder.decode(url, StandardCharsets.UTF_8));
         String rawHtml = contentHandler.handle(url);
         urlDiscoverer.discover(rawHtml).stream()
                 .filter(discoveredWebsites::add)

@@ -6,8 +6,9 @@ import com.javadi.websitecrawler.crawler.UrlDiscoverer;
 import com.javadi.websitecrawler.crawler.UrlUtils;
 import com.javadi.websitecrawler.crawler.WebsiteCrawler;
 import com.javadi.websitecrawler.discovery.RegexMatcherUrlDiscoverer;
-import com.javadi.websitecrawler.io.ContentReaderImpl;
+import com.javadi.websitecrawler.io.FileSystemContentReader;
 import com.javadi.websitecrawler.io.FileSystemContentWriter;
+import com.javadi.websitecrawler.io.WebContentReaderImpl;
 import com.javadi.websitecrawler.utils.UrlUtilsImpl;
 
 public class App {
@@ -25,7 +26,7 @@ public class App {
 
 		String website = urlUtils.getDomainForApplicationInput(domain);
 		String protocol = urlUtils.getProtocol(domain);
-		ContentHandler contentHandler = new ContentHandlerImpl(urlUtils, new ContentReaderImpl(), new FileSystemContentWriter(domain));
+		ContentHandler contentHandler = new ContentHandlerImpl(urlUtils, new WebContentReaderImpl(), new FileSystemContentReader(), new FileSystemContentWriter(domain));
 		UrlDiscoverer urlDiscoverer = new RegexMatcherUrlDiscoverer(urlUtils, protocol);
 		WebsiteCrawler websiteCrawler = new WebsiteCrawler(protocol, website, contentHandler, urlDiscoverer);
 		websiteCrawler.crawl();

@@ -21,11 +21,10 @@ public class HtmlContentHandler implements SpecificContentHandler {
 
     @Override
     public String handle(String url, HttpURLConnection connection, String fileExtension) throws IOException {
-        String content = contentReader.readAsString(connection);
         String parentPath = urlUtils.getParentPath(url);
         String fileName = urlUtils.getFileNameWithExtension(url, fileExtension);
-        contentWriter.write(content, parentPath, fileName);
-        return content;
+        String output = contentWriter.write(connection, parentPath, fileName);
+        return contentReader.readAsString(output);
     }
 
 }

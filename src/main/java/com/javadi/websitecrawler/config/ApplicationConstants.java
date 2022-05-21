@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 public final class ApplicationConstants {
 
+    public static final int DOWNLOADING_BUFFER_SIZE = 4096;
     public static final Pattern HREF_PATTERN = Pattern.compile("(href=\")([^\"]+)");
     public static final Pattern URL_PATTERN = Pattern.compile("(http|ftp|https)://([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:/~+#-]*[\\w@?^=%&/~+#-])");
     public static final Pattern HTTP_PATTERN = Pattern.compile("((ftp|https?)(://))?(www.)?(.*)");
