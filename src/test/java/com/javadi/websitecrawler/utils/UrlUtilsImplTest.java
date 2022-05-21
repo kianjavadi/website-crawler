@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -144,6 +145,27 @@ class UrlUtilsImplTest {
         url = "https://www.tretton37.com/who-we-are?query=123";
         assertEquals("https://tretton37.com/who-we-are", urlUtils.getFinalCompleteUrl(url, protocol));
         System.out.println("shouldCalculateACompleteValidUrl passed");
+    }
+
+    @Test
+    void shouldPassWhenGivenUrlIsValid() {
+        String url = "https://www.google.com";
+        urlUtils.validateWebUrl(url);
+
+        url = "https://google.com";
+        urlUtils.validateWebUrl(url);
+
+        url = "google.com";
+        urlUtils.validateWebUrl(url);
+
+        url = "maps.google.com";
+        urlUtils.validateWebUrl(url);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenGivenUrlIsNotValid() {
+        String url = "https://some.invalid.website.ccccc";
+        assertThrows(IllegalArgumentException.class, () -> urlUtils.validateWebUrl(url));
     }
 
 }

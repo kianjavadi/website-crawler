@@ -10,14 +10,20 @@ import com.javadi.websitecrawler.utils.UrlUtilsImpl;
 
 public class App {
 
-	public static void main(String[] args) throws Exception {
-		String domain= "tretton37.com";
+	public static void main(String[] args) {
+		String domain;
+		if (args == null || args.length == 0) {
+			domain = "tretton37.com";
+		} else {
+			domain = args[0];
+		}
 		long start = System.currentTimeMillis();
 		UrlUtils urlUtils = new UrlUtilsImpl(domain);
+		urlUtils.validateWebUrl(domain);
 		ContentHandler contentHandler = new ContentHandlerImpl(urlUtils, new ContentReaderImpl(), new FileSystemContentWriter(domain));
 		WebsiteCrawler websiteCrawler = new WebsiteCrawler(domain, urlUtils, contentHandler);
 		websiteCrawler.crawl();
-		System.out.println("TOTAL TIME TAKEN: " + (System.currentTimeMillis() - start));
+		System.out.println("TOTAL TIME TAKEN: " + (System.currentTimeMillis() - start) + " (ms)");
 	}
 
 }

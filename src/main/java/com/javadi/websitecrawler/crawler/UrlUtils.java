@@ -22,4 +22,6 @@ public interface UrlUtils {
 
     String getFinalCompleteUrl(String url, String protocol);
 
+    void validateWebUrl(String url) throws IllegalArgumentException;
+
 }

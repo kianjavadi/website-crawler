@@ -2,8 +2,11 @@ package com.javadi.websitecrawler.utils;
 
 import com.javadi.websitecrawler.crawler.UrlUtils;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -127,6 +130,21 @@ public class UrlUtilsImpl implements UrlUtils {
         String removedWww = removeWww(removedSharpSign);
         String removedAfterQuestionMark = removedQuestionMark(removedWww);
         return removeForwardSlashAtTheEnd(removedAfterQuestionMark);
+    }
+
+    @Override
+    public void validateWebUrl(String webUrl) throws IllegalArgumentException {
+        try {
+            String domain = getDomainForApplicationInput(webUrl);
+            String protocol = getProtocol(webUrl);
+            String website = protocol + "://" + domain;
+            URL url = new URL(website);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.connect();
+        } catch (IOException e) {
+            System.out.printf("The url is not valid: %s%n", e.getMessage());
+            throw new IllegalArgumentException("The url is not valid", e);
+        }
     }
 
     private String removedQuestionMark(String url) {
