@@ -51,11 +51,7 @@ public class HtmlFileLinkFinder {
         UrlDiscoverer urlDiscoverer = new RegexMatcherUrlDiscoverer(urlUtils, protocol);
         Set<String> discoveredLinks = urlDiscoverer.discover(rawHtml);
         discoveredLinks.stream()
-                .filter(link -> {
-                    if (mustContains.isEmpty())
-                        return true;
-                    return mustContains.stream().allMatch(link::contains);
-                })
+                .filter(link -> mustContains.isEmpty() || mustContains.stream().allMatch(link::contains))
                 .forEach(System.out::println);
     }
 
