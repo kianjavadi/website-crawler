@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -26,7 +26,7 @@ public class ClipboardWriter {
     public static void main(String[] args) throws Exception {
         var file = args.length > 0 ? Path.of(args[0]) : Path.of("src/main/resources/clipboard.txt");
         var links = read((file));
-        var writeLinks = new HashSet<>(links);
+        var writeLinks = new LinkedHashSet<>(links);
         var initialSize = links.size();
         var remained = new AtomicInteger(initialSize);
         System.out.printf("there are %d lines\n", initialSize);
@@ -59,9 +59,9 @@ public class ClipboardWriter {
         clipboard.setContents(stringSelection, null);
     }
 
-    public static Set<String> read(Path file) throws IOException {
+    public static List<String> read(Path file) throws IOException {
         try (var stream = Files.lines(file, StandardCharsets.UTF_8)) {
-            return stream.collect(Collectors.toSet());
+            return stream.collect(Collectors.toList());
         }
     }
 
